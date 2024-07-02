@@ -26,28 +26,18 @@ export default function Home() {
   async function fetchPosts() {
     const { data, error } = await supabase
       .from('posts')
-      .select(`
-      id,index
-      user_id,
-      content,
-      created_at,
-      user:user_id (
-        id, 
-        name,
-        email,
-        created_at
-      )
-      `)
-      .order('created_at', { ascending: false });
-  
+      .select(`*`)
+    console.log(data, error)
     if (error) {
       console.error('Error fetching posts:', error);
     } else if (data) {
         const formattedData = data.map((post: any) => ({
             ...post,
-            user: post.user[0] // Adjust if user is not an array
+            user: post.user ? post.user : null // Handle cases where user might be missing
+            //user: post.user[0] // Adjust if user is not an array
           })) as Post[];
       setPosts(formattedData);
+      console.log("POSTS: ", posts)
     }
   }
 
@@ -56,7 +46,7 @@ export default function Home() {
       {posts.map((post) => (
         <div key={post.id}>
           <p>{post.content}</p>
-          <small>Posted by {post.user.email} on {new Date(post.created_at).toLocaleString()}</small>
+          <small>Posted by {post.user} on {new Date(post.created_at).toLocaleString()}</small>
         </div>
       ))}
     </div>
