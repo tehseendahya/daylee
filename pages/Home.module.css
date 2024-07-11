@@ -1,0 +1,58 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .title {
+    text-align: center;
+    color: #1877f2;
+    margin-bottom: 30px;
+  }
+  
+  .loading, .noPosts {
+    text-align: center;
+    color: #666;
+    font-size: 18px;
+    margin-top: 50px;
+  }
+  
+  .postList {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .postCard {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .postCard:hover {
+    transform: translateY(-5px);
+  }
+  
+  .postContent {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+  }
+  
+  .postMeta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: #666;
+  }
+  
+  .postAuthor {
+    font-weight: bold;
+  }
+  
+  .postDate {
+    font-style: italic;
+  }
+  
