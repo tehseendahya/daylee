@@ -1,7 +1,8 @@
-import { useState, FormEvent } from 'react'
+import { useState } from 'react'
 import { supabase } from '../../daylee/lib/supabase'
 import { useRouter } from 'next/router'
 import styles from './index.module.css'
+import { FormEvent } from 'react'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -9,46 +10,44 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
-  const [useMagicLink, setUseMagicLink] = useState(false)
-  const [magicLinkSent, setMagicLinkSent] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleGoogleSignIn = async () => {
+    setError(null)
+    setIsLoading(true)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://yourdomain.com/auth/callback', // Replace with your redirect URL
+      },
+    })
+    if (error) {
+      setError(error.message)
+    }
+    setIsLoading(false)
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
     setIsLoading(true)
 
-    if (useMagicLink) {
-      const { error } = await supabase.auth.signInWithOtp({
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({
         email,
-        options: {
-          shouldCreateUser: isSignUp,
-          emailRedirectTo: 'https://example.com/welcome', // Replace with your redirect URL
-        },
+        password,
       })
       if (error) {
         setError(error.message)
       } else {
-        setMagicLinkSent(true)
+        alert('Check your email for the confirmation link!')
       }
     } else {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        })
-        if (error) {
-          setError(error.message)
-        } else {
-          alert('Check your email for the confirmation link!')
-        }
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        setError(error.message)
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password })
-        if (error) {
-          setError(error.message)
-        } else {
-          router.push('/')
-        }
+        router.push('/')
       }
     }
 
@@ -60,7 +59,6 @@ export default function Login() {
       <form onSubmit={handleSubmit} className={styles.loginForm}>
         <h2 className={styles.formTitle}>{isSignUp ? 'Sign Up' : 'Login'}</h2>
         {error && <p className={styles.errorMessage}>{error}</p>}
-        {magicLinkSent && <p className={styles.successMessage}>Check your email for the magic link!</p>}
         <div className={styles.inputGroup}>
           <label htmlFor="email">Email</label>
           <input 
@@ -72,34 +70,31 @@ export default function Login() {
             placeholder="Enter your email"
           />
         </div>
-        {!useMagicLink && (
-          <div className={styles.inputGroup}>
-            <label htmlFor="password">Password</label>
-            <input 
-              type="password" 
-              id="password"
-              value={password} 
-              onChange={(e) => setPassword(e.target.value)} 
-              required 
-              placeholder="Enter your password"
-            />
-          </div>
-        )}
-        <div className={styles.checkboxGroup}>
-          <input
-            type="checkbox"
-            id="useMagicLink"
-            checked={useMagicLink}
-            onChange={() => setUseMagicLink(!useMagicLink)}
+        <div className={styles.inputGroup}>
+          <label htmlFor="password">Password</label>
+          <input 
+            type="password" 
+            id="password"
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+            placeholder="Enter your password"
           />
-          <label htmlFor="useMagicLink">Use Magic Link</label>
         </div>
         <button 
           type="submit" 
           className={styles.submitButton}
-          disabled={isLoading || magicLinkSent}
+          disabled={isLoading}
         >
-          {isLoading ? 'Processing...' : (useMagicLink ? 'Send Magic Link' : (isSignUp ? 'Sign Up' : 'Login'))}
+          {isLoading ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Login')}
+        </button>
+        <button 
+          type="button" 
+          onClick={handleGoogleSignIn} 
+          className={styles.googleButton}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Processing...' : 'Sign in with Google'}
         </button>
         <p className={styles.toggleText}>
           {isSignUp ? 'Already have an account?' : 'Don\'t have an account?'}
