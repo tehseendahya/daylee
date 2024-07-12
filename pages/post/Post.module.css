@@ -1,56 +1,54 @@
 .container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f0f2f5;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .title {
-    text-align: center;
-    color: #1877f2;
-    margin-bottom: 20px;
-  }
-  
-  .imageContainer {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  
-  .image {
-    border-radius: 50%;
-    object-fit: cover;
-  }
-  
-  .form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .textarea {
-    height: 150px;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    resize: vertical;
-    font-size: 16px;
-    margin-bottom: 15px;
-  }
-  
-  .button {
-    background-color: #1877f2;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .button:hover {
-    background-color: #166fe5;
-  }
-  
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  color: #1877f2;
+  margin-bottom: 30px;
+}
+
+.imageContainer {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.image {
+  border-radius: 50%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.textarea {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  min-height: 100px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #155bb5;
+}
