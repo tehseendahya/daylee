@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react'
-import { supabase } from '../daylee/lib/supabase'
-import styles from './Home.module.css'
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router'; // Assuming you're using Next.js
+import { supabase } from '../daylee/lib/supabase';
+import styles from './Home.module.css';
 
 interface User {
   id: string;
@@ -14,64 +15,47 @@ interface Post {
   user_id: string;
   content: string;
   created_at: string;
-  user: User
+  user: User;
 }
 
 export default function Home() {
-  const [posts, setPosts] = useState<Post[]>([])
-  //I switched this to false. IDK if this is a problem
-  //switch back to true once I get user to load
-  const [isLoading, setIsLoading] = useState(false)
-
-
-
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter(); // Use router for navigation
 
   useEffect(() => {
-    fetchPosts()
-    //testing
-  }, [])
-
-
-
+    fetchPosts();
+  }, []);
 
   async function fetchPosts() {
-
-    //console.log("user is", await supabase.from('users').select('email'));
-
-
-    //My PROBLEMS
-    //1. (FIXED) users is not showing any data at all --> Impacts posts displayed
-    //2. I can't figure out how to sign up for the platform --> Doesn't allow you to post
-
-    //Next steps
-    ///1. Make it so you have to post first to see others' posts
-    ///2. You can only see your followers and following's posts
-    ///3. Images
-
-
     const { data, error } = await supabase
       .from('posts')
       .select(`
-      *,
-      user:users(name)
-      `)
+        *,
+        user:users(name)
+      `);
+
     if (error) {
       console.error('Error fetching posts:', error);
     } else if (data) {
-      const formattedData = data.map((post: any) => {
-        console.log('name for post', post.user?.name || "Anonymous");
-        return {
-          ...post,
-          user: post.user ? post.user : { name: "Anonymous" }
-         // Handle cases where user might be missing
-        };
-      }) as Post[];
+      const formattedData = data.map((post: any) => ({
+        ...post,
+        user: post.user ? post.user : { name: 'Anonymous' },
+      })) as Post[];
       setPosts(formattedData);
     }
   }
 
   return (
     <div className={styles.container}>
+      <div className={styles.header}>
+        <button onClick={() => router.push('/login')} className={styles.button}>
+          Login
+        </button>
+        <button onClick={() => router.push('/post')} className={styles.button}>
+          Post
+        </button>
+      </div>
       <h1 className={styles.title}>Recent Posts</h1>
       {isLoading ? (
         <div className={styles.loading}>Loading posts...</div>
@@ -82,7 +66,7 @@ export default function Home() {
               <p className={styles.postContent}>{post.content}</p>
               <div className={styles.postMeta}>
                 <span className={styles.postAuthor}>
-                  Posted by {post.user.name || "Anonymous"}
+                  Posted by {post.user.name || 'Anonymous'}
                 </span>
                 <span className={styles.postDate}>
                   on {new Date(post.created_at).toLocaleString()}
@@ -95,5 +79,5 @@ export default function Home() {
         <div className={styles.noPosts}>No posts found.</div>
       )}
     </div>
-  )
+  );
 }
