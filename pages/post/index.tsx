@@ -3,7 +3,8 @@ import { supabase } from '../../daylee/lib/supabase'
 import { useRouter } from 'next/router'
 import { User } from '@supabase/supabase-js'
 import Image from 'next/image'
-import styles from 'pages/post/Post.module.css'
+import styles from './Post.module.css'
+
 
 export default function Post() {
   const [content, setContent] = useState('')
