@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router'; // Assuming you're using Next.js
+import { useRouter } from 'next/router';
 import { supabase } from '../daylee/lib/supabase';
 import styles from './Home.module.css';
 
-interface User {
+interface Profile {
   id: string;
-  name: string;
+  full_name: string;
   email: string;
-  created_at: string;
+  updated_at: string;
+  avatar_url: string | null;
 }
 
 interface Post {
@@ -15,24 +16,50 @@ interface Post {
   user_id: string;
   content: string;
   created_at: string;
-  user: User;
+  profile: Profile;
 }
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter(); // Use router for navigation
+  const router = useRouter();
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    async function fetchProfile() {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) {
+        console.error('Error fetching user:', error);
+      }
+      if (!user) {
+        router.push('/login');
+      } else {
+        const { data, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+        } else if (data) {
+          setProfile(data);
+        }
+      }
+    }
+    fetchProfile();
+  }, [router]);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [profile]);
 
   async function fetchPosts() {
     const { data, error } = await supabase
       .from('posts')
       .select(`
         *,
-        user:users(name)
+        profile:profiles(full_name, avatar_url)
       `);
 
     if (error) {
@@ -40,18 +67,44 @@ export default function Home() {
     } else if (data) {
       const formattedData = data.map((post: any) => ({
         ...post,
-        user: post.user ? post.user : { name: 'Anonymous' },
+        profile: post.profile ? post.profile : { full_name: 'Anonymous' },
       })) as Post[];
       setPosts(formattedData);
     }
   }
 
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error('Error signing out:', error);
+    } else {
+      setProfile(null);
+      router.push('/login');
+    }
+  };
+
+  const handleProfileClick = (userId: string) => {
+    router.push(`/profile/${userId}`);
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <button onClick={() => router.push('/login')} className={styles.button}>
-          Login
-        </button>
+        {profile ? (
+          <>
+            <span className={styles.greeting}>Hello, {profile.full_name}</span>
+            <button onClick={handleSignOut} className={styles.button}>
+              Sign Out
+            </button>
+            <button onClick={() => router.push('/profile')} className={styles.button}>
+              My Profile
+            </button>
+          </>
+        ) : (
+          <button onClick={() => router.push('/login')} className={styles.button}>
+            Login
+          </button>
+        )}
         <button onClick={() => router.push('/post')} className={styles.button}>
           Post
         </button>
@@ -66,7 +119,13 @@ export default function Home() {
               <p className={styles.postContent}>{post.content}</p>
               <div className={styles.postMeta}>
                 <span className={styles.postAuthor}>
-                  Posted by {post.user.name || 'Anonymous'}
+                  Posted by{' '}
+                  <button
+                    //onClick={() => handleProfileClick(post.user_id)}
+                    className={styles.profileButton}
+                  >
+                    {post.profile.full_name || 'Anonymous'}
+                  </button>
                 </span>
                 <span className={styles.postDate}>
                   on {new Date(post.created_at).toLocaleString()}
@@ -76,7 +135,7 @@ export default function Home() {
           ))}
         </div>
       ) : (
-        <div className={styles.noPosts}>No posts found.</div>
+        <div className={styles.noPosts}>You must login to see posts.</div>
       )}
     </div>
   );

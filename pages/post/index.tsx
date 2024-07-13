@@ -45,15 +45,17 @@ export default function Post() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Create a New Post</h1>
+      {/*}
       <div className={styles.imageContainer}>
         <Image 
-          src="/elon-musk.jpg" 
-          alt="Elon Musk" 
+          src="/pages/post/shot.png"
+          alt="Elon wants to know what you got done" 
           width={200} 
           height={200} 
           className={styles.image}
         />
       </div>
+      */}
       <form onSubmit={handlePost} className={styles.form}>
         <textarea 
           value={content} 

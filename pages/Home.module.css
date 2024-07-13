@@ -78,3 +78,17 @@
 .postDate {
   font-style: italic;
 }
+
+.profileButton {
+  background: none;
+  border: none;
+  color: #0070f3;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.profileButton:hover {
+  color: #0050a0;
+}
