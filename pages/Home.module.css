@@ -2,6 +2,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
+  font-family: 'futura', sans-serif;
 }
 
 .header {
@@ -9,6 +10,7 @@
   justify-content: flex-end;
   gap: 10px;
   margin-bottom: 20px;
+  font-family: 'futura', sans-serif;
 }
 
 .button {
@@ -20,16 +22,19 @@
   cursor: pointer;
   font-size: 16px;
   transition: background-color 0.3s ease;
+  font-family: 'futura', sans-serif;
 }
 
 .button:hover {
   background-color: #155bb5;
+  font-family: 'futura', sans-serif;
 }
 
 .title {
   text-align: center;
   color: #1877f2;
   margin-bottom: 30px;
+  font-family: 'futura', sans-serif;
 }
 
 .loading,
@@ -38,12 +43,14 @@
   color: #666;
   font-size: 18px;
   margin-top: 50px;
+  font-family: 'futura', sans-serif;
 }
 
 .postList {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  font-family: 'futura', sans-serif;
 }
 
 .postCard {
@@ -52,16 +59,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 20px;
   transition: transform 0.2s ease-in-out;
+  font-family: 'futura', sans-serif;
 }
 
 .postCard:hover {
   transform: translateY(-5px);
+  font-family: 'futura', sans-serif;
 }
 
 .postContent {
   font-size: 16px;
   line-height: 1.5;
   margin-bottom: 15px;
+  font-family: 'futura', sans-serif;
 }
 
 .postMeta {
@@ -69,14 +79,17 @@
   justify-content: space-between;
   font-size: 14px;
   color: #666;
+  font-family: 'futura', sans-serif;
 }
 
 .postAuthor {
   font-weight: bold;
+  font-family: 'futura', sans-serif;
 }
 
 .postDate {
   font-style: italic;
+  font-family: 'futura', sans-serif;
 }
 
 .profileButton {
@@ -87,8 +100,10 @@
   font-weight: bold;
   padding: 0;
   text-decoration: underline;
+  font-family: 'futura', sans-serif;
 }
 
 .profileButton:hover {
   color: #0050a0;
+  font-family: 'futura', sans-serif;
 }

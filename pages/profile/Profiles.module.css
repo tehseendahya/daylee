@@ -8,12 +8,14 @@
   padding: 2rem;
   background-color: #f7f7f7;
   min-height: 100vh;
+  font-family: 'Futura', sans-serif;
 }
 
 .title {
   font-size: 2rem;
   margin-bottom: 1.5rem;
   color: #333;
+  font-family: 'Futura', sans-serif;
 }
 
 .profileInfo {
@@ -24,6 +26,7 @@
   max-width: 600px;
   width: 100%;
   margin-bottom: 2rem;
+  font-family: 'Futura', sans-serif;
 }
 
 .avatar {
@@ -32,30 +35,36 @@
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 1rem;
+  font-family: 'Futura', sans-serif;
 }
 
 .profileInfo p {
   margin-bottom: 1rem;
   font-size: 1rem;
   color: #555;
+  font-family: 'Futura', sans-serif;
 }
 
 .profileInfo a {
   color: #0070f3;
   text-decoration: none;
+  font-family: 'Futura', sans-serif;
 }
 
 .profileInfo a:hover {
   text-decoration: underline;
+  font-family: 'Futura', sans-serif;
 }
 
 .form {
   max-width: 100%;
   width: 100%;
+  font-family: 'Futura', sans-serif;
 }
 
 .inputGroup {
   margin-bottom: 1.5rem;
+  font-family: 'Futura', sans-serif;
 }
 
 .inputGroup label {
@@ -63,6 +72,7 @@
   font-size: 1rem;
   margin-bottom: 0.5rem;
   color: #555;
+  font-family: 'Futura', sans-serif;
 }
 
 .input,
@@ -73,17 +83,20 @@
   border-radius: 4px;
   font-size: 1rem;
   color: #333;
+  font-family: 'Futura', sans-serif;
 }
 
 .input:focus,
 .textarea:focus {
   border-color: #0070f3;
   outline: none;
+  font-family: 'Futura', sans-serif;
 }
 
 .textarea {
   resize: vertical;
   min-height: 100px;
+  font-family: 'Futura', sans-serif;
 }
 
 .button {
@@ -96,15 +109,18 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  font-family: 'Futura', sans-serif;
 }
 
 .button:disabled {
   background-color: #aaa;
   cursor: not-allowed;
+  font-family: 'Futura', sans-serif;
 }
 
 .button:not(:disabled):hover {
   background-color: #005bb5;
+  font-family: 'Futura', sans-serif;
 }
 
 .loading,
@@ -113,17 +129,20 @@
   color: #555;
   text-align: center;
   margin-top: 2rem;
+  font-family: 'Futura', sans-serif;
 }
 
 .subtitle {
   font-size: 1.5rem;
   margin-bottom: 1rem;
   color: #333;
+  font-family: 'Futura', sans-serif;
 }
 
 .postList {
   display: grid;
   gap: 1rem;
+  font-family: 'Futura', sans-serif;
 }
 
 .postCard {
@@ -131,11 +150,13 @@
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Futura', sans-serif;
 }
 
 .postContent {
   margin-bottom: 0.5rem;
   color: #333;
+  font-family: 'Futura', sans-serif;
 }
 
 .popup {
@@ -148,14 +169,18 @@
   border-radius: 5px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   text-align: center;
+  font-family: 'Futura', sans-serif;
 }
 
 .popup p {
   margin-bottom: 20px;
+  font-family: 'Futura', sans-serif;
 }
+
 .postDate {
   font-size: 0.9rem;
   color: #666;
+  font-family: 'Futura', sans-serif;
 }
 
 .backButton {
@@ -168,8 +193,10 @@
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.2s ease;
+  font-family: 'Futura', sans-serif;
 }
 
 .backButton:hover {
   background-color: #555;
+  font-family: 'Futura', sans-serif;
 }
