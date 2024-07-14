@@ -11,6 +11,8 @@ interface Profile {
   email: string;
   updated_at: string;
   avatar_url: string | null;
+  streak: number;
+  last_post_date: string | null;
 }
 
 interface Post {
@@ -46,6 +48,7 @@ export default function Home() {
           console.error('Error fetching profile:', profileError);
         } else if (data) {
           setProfile(data);
+          updateStreak(data);
         }
       }
     }
@@ -61,7 +64,7 @@ export default function Home() {
       .from('posts')
       .select(`
         *,
-        profile:profiles(full_name, avatar_url)
+        profile:profiles(full_name, avatar_url, streak)
       `);
 
     if (error) {
@@ -69,10 +72,48 @@ export default function Home() {
     } else if (data) {
       const formattedData = data.map((post: any) => ({
         ...post,
-        profile: post.profile ? post.profile : { full_name: 'Anonymous' },
+        profile: post.profile ? post.profile : { full_name: 'Anonymous', streak: 0 },
       })) as Post[];
       setPosts(formattedData);
     }
+  }
+
+  async function updateStreak(profile: Profile) {
+    const today = new Date().toISOString().split('T')[0];
+    const lastPostDate = profile.last_post_date ? new Date(profile.last_post_date).toISOString().split('T')[0] : null;
+
+    let newStreak = profile.streak;
+    let newLastPostDate = profile.last_post_date;
+
+    if (lastPostDate === today) {
+      // User has already posted today, do nothing
+    } else if (lastPostDate === yesterday()) {
+      // User posted yesterday, increment streak
+      newStreak += 1;
+      newLastPostDate = today;
+    } else {
+      // User didn't post yesterday, reset streak
+      newStreak = 1;
+      newLastPostDate = today;
+    }
+
+    // Update the profile in Supabase
+    const { error } = await supabase
+      .from('profiles')
+      .update({ streak: newStreak, last_post_date: newLastPostDate })
+      .eq('id', profile.id);
+
+    if (error) {
+      console.error('Error updating streak:', error);
+    } else {
+      setProfile({ ...profile, streak: newStreak, last_post_date: newLastPostDate });
+    }
+  }
+
+  function yesterday() {
+    const date = new Date();
+    date.setDate(date.getDate() - 1);
+    return date.toISOString().split('T')[0];
   }
 
   const handleSignOut = async () => {
@@ -95,6 +136,7 @@ export default function Home() {
         {profile ? (
           <>
             <span className={styles.greeting}>Hello, {profile.full_name}</span>
+            <span className={styles.streak}>Streak: {profile.streak}</span>
             <button onClick={handleSignOut} className={styles.button}>
               Sign Out
             </button>
@@ -123,11 +165,12 @@ export default function Home() {
                 <span className={styles.postAuthor}>
                   Posted by{' '}
                   <button
-                    //onClick={() => handleProfileClick(post.user_id)}
+                    onClick={() => handleProfileClick(post.user_id)}
                     className={styles.profileButton}
                   >
                     {post.profile.full_name || 'Anonymous'}
                   </button>
+                  <span className={styles.streak}> (Streak: {post.profile.streak})</span>
                 </span>
                 <span className={styles.postDate}>
                   on {new Date(post.created_at).toLocaleString()}

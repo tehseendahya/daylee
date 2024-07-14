@@ -11,6 +11,8 @@ interface Profile {
   twitter_handle: string | null;
   current_work: string | null;
   avatar_url: string | null;
+  streak: number;
+  last_post_date: string | null;
 }
 
 interface Post {
@@ -30,11 +32,6 @@ export default function ProfilePage() {
   const router = useRouter();
   const { id } = router.query;
   const [showPopup, setShowPopup] = useState(false);
-
-  //useEffect(() => {
-  //  fetchProfile();
-  //}, [id]);
-  //just changed this
 
   useEffect(() => {
     if (router.isReady) {
@@ -73,7 +70,6 @@ export default function ProfilePage() {
     if (error) {
       console.error('Error fetching profile:', error);
       if (error.code === 'PGRST116' || error.code === "404") {
-        // This error code typically means no rows were returned
         setShowPopup(true);
       } else {
         setError('Failed to load profile');
@@ -84,8 +80,6 @@ export default function ProfilePage() {
       setCurrentWork(data.current_work || '');
       await fetchUserPosts(profileId);
     }
-
-    
 
     setIsLoading(false);
   }
@@ -158,6 +152,7 @@ export default function ProfilePage() {
           <img src={profile.avatar_url} alt={profile.full_name} className={styles.avatar} />
         )}
         <p><strong>Email:</strong> {profile.email}</p>
+        <p><strong>Streak:</strong> {profile.streak} days</p>
         {isOwnProfile ? (
           <form onSubmit={(e) => { e.preventDefault(); updateProfile(); }} className={styles.form}>
             <div className={styles.inputGroup}>
