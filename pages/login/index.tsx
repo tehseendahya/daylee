@@ -3,6 +3,8 @@ import { supabase } from '../../daylee/lib/supabase';
 import { useRouter } from 'next/router';
 import styles from './index.module.css';
 import { AuthError } from '@supabase/supabase-js';
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,7 +21,7 @@ export default function Login() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://postdaylee.com'
+        redirectTo: 'https://postdaylee.com/post'
       },
     });
     if (error) {
@@ -34,21 +36,32 @@ export default function Login() {
     setIsLoading(true);
 
     const performAction = async (): Promise<{ error: AuthError | null }> => {
+      console.log("issue here 1")
       if (isSignUp) {
+        console.log("issue here 2")
         const { data, error } = await supabase.auth.signUp({
           email,
           password
         });
-
+        console.log("data here", data.user)
+        console.log("error is", error)
         if (data.user) {
+          
           // Save the name to the profiles table
           const { error: profileError } = await supabase
+    
             .from('profiles')
-            .insert({
-              id: data.user.id,
+            
+            .update({
+              //id: data.user.id,
               full_name: name,
               email: email,
+            })
+            .match({
+              id: data.user.id
             });
+
+            console.log('profile error', profileError)
           if (profileError) {
             throw profileError;
           }

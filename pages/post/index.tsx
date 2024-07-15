@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import styles from './Post.module.css';
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 export default function Post() {
   const [content, setContent] = useState('');
@@ -45,17 +47,17 @@ export default function Post() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Create a New Post</h1>
-      {/*}
+      
       <div className={styles.imageContainer}>
         <Image 
-          src="/pages/post/shot.png"
+          src="https://rlkujunnwysipywrqbnk.supabase.co/storage/v1/object/public/UI%20images/elon_for_daylee.png"
           alt="Elon wants to know what you got done" 
-          width={200} 
-          height={200} 
+          width={550} 
+          height={300} 
           className={styles.image}
         />
       </div>
-      */}
+      
       <form onSubmit={handlePost} className={styles.form}>
         <textarea 
           value={content} 
