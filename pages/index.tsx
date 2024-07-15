@@ -93,7 +93,7 @@ export default function Home() {
       newLastPostDate = today;
     } else {
       // User didn't post yesterday, reset streak
-      newStreak = 1;
+      newStreak = 0;
       newLastPostDate = today;
     }
 
