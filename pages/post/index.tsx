@@ -4,12 +4,13 @@ import { useRouter } from 'next/router';
 import { User } from '@supabase/supabase-js';
 import Image from 'next/image';
 import styles from './Post.module.css';
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function Post() {
   const [content, setContent] = useState('');
   const [user, setUser] = useState<User | null>(null);
+  const [hasPostedToday, setHasPostedToday] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -22,10 +23,32 @@ export default function Post() {
         router.push('/login');
       } else {
         setUser(user);
+        checkIfPostedToday(user.id);
       }
     }
+
+    async function checkIfPostedToday(userId: string) {
+      const today = new Date().toISOString().split('T')[0];
+      const { data, error } = await supabase
+        .from('posts')
+        .select('created_at')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (error) {
+        console.error('Error fetching last post date:', error);
+      } else if (data.length > 0) {
+        const lastPostDate = new Date(data[0].created_at).toISOString().split('T')[0];
+        setHasPostedToday(lastPostDate === today);
+        console.log("posted:", hasPostedToday)
+      }
+    }
+    
+
     fetchUser();
   }, [router]);
+  
 
   const handlePost = async (e: FormEvent) => {
     e.preventDefault();
@@ -43,7 +66,7 @@ export default function Post() {
       router.push('/'); // Redirect to the main page
     }
   };
-
+  
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Create a New Post</h1>
@@ -68,9 +91,13 @@ export default function Post() {
         />
         <div className={styles.buttonContainer}>
           <button type="submit" className={styles.button}>Post</button>
-          <button type="button" className={styles.button} onClick={() => router.push('/')}>
-            Back
-          </button>
+          
+          {hasPostedToday ? (
+            <button type="button" className={styles.button} onClick={() => router.push('/')}>
+              Back
+            </button>
+          ): null}
+          
         </div>
       </form>
     </div>
