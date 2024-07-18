@@ -98,6 +98,7 @@ export default function Login() {
 
   return (
     <div className={styles.formContainer}>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <form onSubmit={handleSubmit} className={styles.loginForm}>
         <h2 className={styles.formTitle}>{isSignUp ? 'Sign Up' : 'Login'}</h2>
         {error && <p className={styles.errorMessage}>{error}</p>}

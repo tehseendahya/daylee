@@ -30,7 +30,7 @@ export default function Home() {
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    async function fetchProfile() {
+    async function fetchProfileAndLastPostDate() {
       const { data: { user }, error } = await supabase.auth.getUser();
       if (error) {
         console.error('Error fetching user:', error);
@@ -38,7 +38,7 @@ export default function Home() {
       if (!user) {
         router.push('/login');
       } else {
-        const { data, error: profileError } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -46,13 +46,29 @@ export default function Home() {
 
         if (profileError) {
           console.error('Error fetching profile:', profileError);
-        } else if (data) {
-          setProfile(data);
-          updateStreak(data);
+        } else if (profileData) {
+          // Fetch the latest post date
+          const { data: latestPost, error: postError } = await supabase
+            .from('posts')
+            .select('created_at')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+          if (postError) {
+            console.error('Error fetching latest post:', postError);
+          } else {
+            const lastPostDate = latestPost ? latestPost.created_at : null;
+            profileData.last_post_date = lastPostDate;
+
+            setProfile(profileData);
+            updateStreak(profileData);
+          }
         }
       }
     }
-    fetchProfile();
+    fetchProfileAndLastPostDate();
   }, [router]);
 
   useEffect(() => {
@@ -81,21 +97,28 @@ export default function Home() {
   async function updateStreak(profile: Profile) {
     const today = new Date().toISOString().split('T')[0];
     const lastPostDate = profile.last_post_date ? new Date(profile.last_post_date).toISOString().split('T')[0] : null;
-
+    console.log("last post was", lastPostDate)
+  
     let newStreak = profile.streak;
     let newLastPostDate = profile.last_post_date;
 
+    ///////////NEW CODE HERE TO CHECK. IN NOTEBOOK
     if (lastPostDate === today) {
-      // User has already posted today, do nothing
-    } else if (lastPostDate === yesterday()) {
-      // User posted yesterday, increment streak
-      newStreak += 1;
+      //if they posted today, increment
+      newStreak+=1
       newLastPostDate = today;
+    } else if ((lastPostDate !== yesterday()) && (lastPostDate !== today)) {
+      // if they didn't post today and yesterday reset them to 0
+      //newStreak += 1;
+      //newLastPostDate = today;
+      newStreak =0;
     } else {
       // User didn't post yesterday, reset streak
       newStreak = 0;
       newLastPostDate = today;
     }
+
+    
 
     // Update the profile in Supabase
     const { error } = await supabase
@@ -132,6 +155,7 @@ export default function Home() {
 
   return (
     <div className={styles.container}>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <div className={styles.header}>
         {profile ? (
           <>
@@ -158,7 +182,9 @@ export default function Home() {
         <div className={styles.loading}>Loading posts...</div>
       ) : posts.length > 0 ? (
         <div className={styles.postList}>
-          {posts.map((post) => (
+          {posts
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .map((post) => (
             <div key={post.id} className={styles.postCard}>
               <p className={styles.postContent}>{post.content}</p>
               <div className={styles.postMeta}>

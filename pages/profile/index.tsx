@@ -148,6 +148,7 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.container}>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <h1 className={styles.title}>{profile.full_name}'s Profile</h1>
       <div className={styles.profileInfo}>
         {profile.avatar_url && (
