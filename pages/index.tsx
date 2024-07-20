@@ -98,27 +98,42 @@ export default function Home() {
     const today = new Date().toISOString().split('T')[0];
     const lastPostDate = profile.last_post_date ? new Date(profile.last_post_date).toISOString().split('T')[0] : null;
     console.log("last post was", lastPostDate)
+    const currentPostDate = new Date();
   
     let newStreak = profile.streak;
     let newLastPostDate = profile.last_post_date;
 
-    ///////////NEW CODE HERE TO CHECK. IN NOTEBOOK
-    if (lastPostDate === today) {
-      //if they posted today, increment
-      newStreak+=1
-      newLastPostDate = today;
-    } else if ((lastPostDate !== yesterday()) && (lastPostDate !== today)) {
-      // if they didn't post today and yesterday reset them to 0
-      //newStreak += 1;
-      //newLastPostDate = today;
-      newStreak =0;
-    } else {
-      // User didn't post yesterday, reset streak
-      newStreak = 0;
-      newLastPostDate = today;
-    }
 
-    
+    ///////////NEW CODE HERE TO CHECK. IN NOTEBOOK
+    if (lastPostDate === null) {
+      // First post ever
+      newStreak = 0;
+    } else {
+      const lastPostDateObj = new Date(lastPostDate);
+      const currentPostDateObj = new Date(today);
+      const timeDiff = currentPostDateObj.getTime() - lastPostDateObj.getTime();
+      const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+  
+      if (dayDiff === 1) {
+        // Post on consecutive day, increment streak
+        newStreak++;
+      } else if (dayDiff === 0) {
+        // Post on same day, streak stays the same
+        newStreak = profile.streak; // This line is optional as newStreak is already set to profile.streak
+      } else {
+        // More than one day has passed, reset streak
+        //issue here is streak gets reset to 1, not 0
+        newStreak = 1;
+      }
+    }
+    // Update the profile with new streak and last post date
+    profile.streak = newStreak;
+    profile.last_post_date = newLastPostDate;
+
+    console.log("New streak:", newStreak);
+    console.log("New last post date:", profile.last_post_date);
+
+
 
     // Update the profile in Supabase
     const { error } = await supabase
@@ -131,6 +146,24 @@ export default function Home() {
     } else {
       setProfile({ ...profile, streak: newStreak, last_post_date: newLastPostDate });
     }
+  }
+
+  // Separate function to check and reset streak at midnight
+  async function checkAndResetStreakAtMidnight(profile: Profile) {
+    const today = new Date().toISOString().split('T')[0];
+    const lastPostDate = profile.last_post_date;
+
+    if (lastPostDate && lastPostDate !== today) {
+      profile.streak = 0;
+      // Note: We don't update last_post_date here
+      
+      console.log("Streak reset to 0 at midnight");
+      
+      // Save the updated profile to your database
+      // await saveProfileToDatabase(profile);
+    }
+
+    return profile;
   }
 
   function yesterday() {
