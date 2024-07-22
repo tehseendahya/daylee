@@ -169,6 +169,9 @@ export default function Home() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
+        <title>
+          Welcome to Daylee!
+        </title>
         {profile ? (
           <>
             <span className={styles.greeting}>Hello, {profile.full_name}</span>
