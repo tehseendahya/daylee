@@ -164,6 +164,8 @@ export default function Login() {
           </button>
         </p>
       </form>
+      <Analytics />
+      <SpeedInsights />
     </div>
   );
 }

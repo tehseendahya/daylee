@@ -107,3 +107,29 @@
   color: #0050a0;
   font-family: 'futura', sans-serif;
 }
+
+.avatar {
+  width: 25px;
+  height: 25px;
+  position: relative; 
+	top: 5px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 0.25rem;
+  margin-left: 0.25rem;
+  font-family: 'Futura', sans-serif;
+}
+
+.loadMoreButton {
+  margin: 20px 0;
+  padding: 10px 20px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.loadMoreButton:hover {
+  background-color: #005bb5;
+}

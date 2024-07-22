@@ -72,7 +72,8 @@ export default function ProfilePage() {
     if (error) {
       console.error('Error fetching profile:', error);
       if (error.code === 'PGRST116' || error.code === "404") {
-        setShowPopup(true);
+        //setShowPopup(true);
+        setError('Profile not found');
       } else {
         setError('Failed to load profile');
       }
@@ -146,15 +147,21 @@ export default function ProfilePage() {
     return <div className={styles.error}>Profile not found</div>;
   }
 
+  //xonsole.log(profile.email)
   return (
     <div className={styles.container}>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <h1 className={styles.title}>{profile.full_name}'s Profile</h1>
+      
+        {error && <div className={styles.error}>{error}</div>}
+        
       <div className={styles.profileInfo}>
         {profile.avatar_url && (
           <img src={profile.avatar_url} alt={profile.full_name} className={styles.avatar} />
         )}
+        {profile.email !== null ?
         <p><strong>Email:</strong> {profile.email}</p>
+        : ""}
         <p><strong>Streak:</strong> {profile.streak} days</p>
         {isOwnProfile ? (
           <form onSubmit={(e) => { e.preventDefault(); updateProfile(); }} className={styles.form}>
@@ -212,8 +219,6 @@ export default function ProfilePage() {
       <button onClick={() => router.push('/')} className={styles.backButton}>
         Back to Home
       </button>
-      <Analytics />
-      <SpeedInsights />
     </div>
   );
 }
