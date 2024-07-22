@@ -5,6 +5,7 @@ import styles from './index.module.css';
 import { AuthError } from '@supabase/supabase-js';
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import Head from 'next/head';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -98,12 +99,19 @@ export default function Login() {
 
   return (
     <div className={styles.formContainer}>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+      <Head>
+        <title>{isSignUp ? 'Sign Up' : 'Log In'} - PostDayLee</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="Access your daylee account or create a new one. Multiple login options available including email and Google sign-in." />
+      </Head>
+  
+      <h1 className={styles.heading1}>Welcome to daylee</h1>
+      <p className={styles.paragraph}>Access your account or create a new one to get started.</p>
+  
       <form onSubmit={handleSubmit} className={styles.loginForm}>
         <h2 className={styles.formTitle}>{isSignUp ? 'Sign Up' : 'Login'}</h2>
         {error && <p className={styles.errorMessage}>{error}</p>}
-        {isSignUp ? 
-          // Add name to signup
+        {isSignUp ? (
           <div className={styles.inputGroup}>
             <label htmlFor="name">Name</label>
             <input 
@@ -115,7 +123,7 @@ export default function Login() {
               placeholder="Enter your name"
             />
           </div>
-        : ""}
+        ) : ""}
         <div className={styles.inputGroup}>
           <label htmlFor="email">Email</label>
           <input 
@@ -131,7 +139,7 @@ export default function Login() {
           <label htmlFor="password">Password</label>
           <input 
             type="password" 
-              id="password"
+            id="password"
             value={password} 
             onChange={(e) => setPassword(e.target.value)} 
             required 
@@ -164,8 +172,9 @@ export default function Login() {
           </button>
         </p>
       </form>
+  
       <Analytics />
       <SpeedInsights />
     </div>
-  );
+  )
 }

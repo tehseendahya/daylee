@@ -3,6 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
+  flex-direction: column;
   background-color: #f0f2f5;
   font-family: 'Futura', sans-serif;
 }
@@ -37,13 +38,31 @@
   background-color: #f7f7f7;
   border-color: #c1c1c1;
   color: #333333;
+}
+
+.heading1 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 0rem;
   font-family: 'Futura', sans-serif;
 }
 
-.googleIcon {
-  width: 20px;
-  height: 20px;
-  font-family: 'Futura', sans-serif;
+.paragraph {
+  text-align: center; /* Center the paragraph text */
+  color: #555; /* Adjust color as needed */
+  margin-bottom: 1rem; /* Space below the paragraph */
+  font-family: 'Futura', sans-serif; /* Ensure consistent font */
+}
+
+.optionsList {
+  list-style-type: none;
+  padding: 0;
+  text-align: center;
+}
+
+.optionsListItem {
+  margin: 0.5rem 0;
+  color: #333;
 }
 
 .formTitle {
@@ -89,13 +108,11 @@
 
 .submitButton:hover {
   background-color: #166fe5;
-  font-family: 'Futura', sans-serif;
 }
 
 .submitButton:disabled {
   background-color: #ccc;
   cursor: not-allowed;
-  font-family: 'Futura', sans-serif;
 }
 
 .errorMessage {
@@ -103,13 +120,11 @@
   text-align: center;
   margin-bottom: 1rem;
   font-size: 0.9rem;
-  font-family: 'Futura', sans-serif;
 }
 
 .toggleText {
   text-align: center;
   margin-top: 1rem;
-  font-family: 'Futura', sans-serif;
 }
 
 .toggleButton {
@@ -119,10 +134,8 @@
   cursor: pointer;
   font-weight: bold;
   margin-left: 0.5rem;
-  font-family: 'Futura', sans-serif;
 }
 
 .toggleButton:hover {
   text-decoration: underline;
-  font-family: 'Futura', sans-serif;
 }
