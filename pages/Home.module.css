@@ -133,3 +133,19 @@
 .loadMoreButton:hover {
   background-color: #005bb5;
 }
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 400px; /* Adjust as needed for medium size */
+  height: auto; /* Maintain aspect ratio */
+  margin: 0 auto; /* Center the image */
+  border-radius: 8px; /* Optional: Add rounded corners */
+  overflow: hidden; /* Ensure the image fits within the wrapper */
+}
+
+.image {
+  object-fit: cover; /* Ensure the image covers the entire area */
+}
+
+

@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { supabase } from '../../daylee/lib/supabase';
-import styles from './Profiles.module.css'
+import styles from './Profiles.module.css';
 import React from 'react';
-import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 interface Profile {
   id: string;
@@ -26,6 +26,7 @@ interface Post {
 export default function ProfilePage() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [fullName, setFullName] = useState('');
   const [twitterHandle, setTwitterHandle] = useState('');
   const [currentWork, setCurrentWork] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -78,6 +79,7 @@ export default function ProfilePage() {
       }
     } else if (data) {
       setProfile(data);
+      setFullName(data.full_name);
       setTwitterHandle(data.twitter_handle || '');
       setCurrentWork(data.current_work || '');
       await fetchUserPosts(profileId);
@@ -107,6 +109,7 @@ export default function ProfilePage() {
     const { error } = await supabase
       .from('profiles')
       .update({
+        full_name: fullName,
         twitter_handle: twitterHandle,
         current_work: currentWork,
       })
@@ -158,6 +161,17 @@ export default function ProfilePage() {
         <p><strong>Streak:</strong> {profile.streak} days</p>
         {isOwnProfile ? (
           <form onSubmit={(e) => { e.preventDefault(); updateProfile(); }} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="full_name">Full Name:</label>
+              <input
+                type="text"
+                id="full_name"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Your full name"
+                className={styles.input}
+              />
+            </div>
             <div className={styles.inputGroup}>
               <label htmlFor="twitter">Twitter Handle:</label>
               <input

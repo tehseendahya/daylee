@@ -4,6 +4,8 @@ import { supabase } from '../daylee/lib/supabase';
 import styles from './Home.module.css';
 import { Analytics } from "@vercel/analytics/react"; // Importing Analytics
 import { SpeedInsights } from "@vercel/speed-insights/next"; // Importing SpeedInsights
+import Image from 'next/image';
+import FriendsPopup from './FriendsPopup';
 
 interface Profile {
   id: string;
@@ -21,6 +23,7 @@ interface Post {
   content: string;
   created_at: string;
   profile: Profile;
+  image_url: string;
 }
 
 
@@ -34,6 +37,7 @@ export default function Home() {
   //for offset
   const offsetValue = 7;
   const [hasMorePosts, setHasMorePosts] = useState(true); // New state to track if there are more posts
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   useEffect(() => {
     async function fetchProfileAndLastPostDate() {
@@ -94,8 +98,8 @@ export default function Home() {
         profile:profiles(full_name, avatar_url, streak)
       `)
       .order('created_at', { ascending: false })
-      //OFFSET STUFF
-      //.range(offset, offset + (offsetValue - 1));
+    //OFFSET STUFF
+    //.range(offset, offset + (offsetValue - 1));
 
     if (error) {
       console.error('Error fetching posts:', error);
@@ -105,7 +109,7 @@ export default function Home() {
         profile: post.profile ? post.profile : { full_name: 'Anonymous', streak: 0, avatar_url: "" },
       })) as Post[];
 
-      
+
       setPosts(formattedData);
     }
   }
@@ -113,44 +117,64 @@ export default function Home() {
   //function loadMorePosts() {
   //  setOffset(offset + offsetValue);
   //  console.log(posts.length)
-   // fetchPosts();
- // }
+  // fetchPosts();
+  // }
 
   async function updateStreak(profile: Profile) {
     if (!profile) return; // Ensure profile is available
 
-    const today = new Date().toISOString().split('T')[0];
-    const lastPostDate = profile.last_post_date ? new Date(profile.last_post_date).toISOString().split('T')[0] : null;
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const lastPostDate = profile.last_post_date ? new Date(profile.last_post_date) : null;
 
     let newStreak = profile.streak;
 
     if (lastPostDate === null) {
-      newStreak = 0; // First post ever
+        newStreak = 1; // First post ever
     } else {
-      const lastPostDateObj = new Date(lastPostDate);
-      const currentPostDateObj = new Date(today);
-      const timeDiff = currentPostDateObj.getTime() - lastPostDateObj.getTime();
-      const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+        const lastPostDay = lastPostDate.toISOString().split('T')[0];
+        const timeDiff = now.getTime() - lastPostDate.getTime();
+        const dayDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
 
-      if (dayDiff === 1) {
-        newStreak++; // Increment streak
-      } else if (dayDiff > 1) {
-        newStreak = 1; // Reset streak
-      }
+        if (today === lastPostDay) {
+            // Post on the same day, streak remains unchanged
+        } else if (dayDiff === 1) {
+            newStreak++; // Increment streak for consecutive day post
+        } else {
+            // Check if it's just after midnight
+            if (now.getHours() === 0 && now.getMinutes() === 0 && now.getSeconds() === 0) {
+                // It's exactly midnight, maintain streak if there was a post yesterday
+                const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+                const yesterdayString = yesterday.toISOString().split('T')[0];
+                if (lastPostDay !== yesterdayString) {
+                    newStreak = 0; // Reset streak to 0 if no post yesterday
+                }
+            } else {
+                newStreak = 1; // New streak starts for a new post after a gap
+            }
+        }
     }
+
+    // Prepare the update data
+    const updateData = { 
+        streak: newStreak, 
+        last_post_date: now.toISOString() 
+    };
 
     // Update the profile in Supabase
     const { error } = await supabase
-      .from('profiles')
-      .update({ streak: newStreak, last_post_date: profile.last_post_date })
-      .eq('id', profile.id);
+        .from('profiles')
+        .update(updateData)
+        .eq('id', profile.id);
 
     if (error) {
-      console.error('Error updating streak:', error);
+        console.error('Error updating streak:', error);
     } else {
-      setProfile({ ...profile, streak: newStreak });
+        setProfile({ ...profile, ...updateData });
     }
-  }
+
+    return profile;
+}
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -179,6 +203,10 @@ export default function Home() {
             <button onClick={handleSignOut} className={styles.button}>
               Sign Out
             </button>
+            
+            <button className={styles.button} onClick={() => setIsPopupOpen(true)}>Manage Friends</button>
+      <FriendsPopup isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
+      
             <button onClick={() => router.push('/profile')} className={styles.button}>
               My Profile
             </button>
@@ -193,27 +221,33 @@ export default function Home() {
         </button>
       </div>
       <h1 className={styles.title}>Recent Posts</h1>
+      <FriendsPopup isOpen={isPopupOpen} onClose={() => setIsPopupOpen(false)} />
       {isLoading ? (
         <div className={styles.loading}>Loading posts...</div>
       ) : posts.length > 0 ? (
         <div className={styles.postList}>
           {posts.map((post) => (
+
             <div key={post.id} className={styles.postCard}>
 
-              {/*IMAGES
-              {posts.map((post) => (
-                <div key={post.id}>
-                <p>{post.content}</p>
-                {post.image_url && <img src={post.image_url} alt="Post Image" />}
+              {post.image_url && (
+                <div className={styles.imageWrapper}>
+                  <Image
+                    src={post.image_url}
+                    alt="Post Image"
+                    layout="responsive"
+                    width={16} // Example aspect ratio width
+                    height={9} // Example aspect ratio height
+                    className={styles.image}
+                  />
                 </div>
-                  ))}
-                */}
+              )}
               <p className={styles.postContent}>{post.content}</p>
               <div className={styles.postMeta}>
                 <span className={styles.postAuthor}>
                   Posted by{' '}
                   {post.profile.avatar_url && (
-                  <img src={post.profile.avatar_url} alt={profile.full_name} className={styles.avatar} />
+                    <img src={post.profile.avatar_url} alt={""} className={styles.avatar} />
                   )}
                   <button
                     onClick={() => handleProfileClick(post.user_id)}
@@ -229,7 +263,7 @@ export default function Home() {
               </div>
             </div>
           ))}
-          
+
           {/*
 
           WORK ON THIS LATER
@@ -240,9 +274,9 @@ export default function Home() {
           )}
           */}
         </div>
-        
+
       ) : (
-        <div className={styles.noPosts}>You must login to see posts.</div>
+        <div className={styles.noPosts}>Loading...</div>
       )}
       <Analytics />
       <SpeedInsights />

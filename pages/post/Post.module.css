@@ -20,6 +20,46 @@
   }
 }
 
+.fileInput {
+  width: 100%;
+  padding: 10px; /* Consistent padding */
+  border: 1px solid #ddd; /* Light border to match other inputs */
+  border-radius: 10px; /* Rounded corners */
+  font-size: 16px; /* Consistent font size */
+  background-color: #f8f8f8; /* Light background color */
+  color: #333; /* Text color */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+  margin-top: 10px; /* Space above the file input */
+}
+
+.fileInput:hover {
+  border-color: #999; /* Darker border on hover */
+}
+
+.fileInput:focus {
+  outline: none; /* Remove default outline */
+  border-color: #0070f3; /* Change border color on focus */
+  box-shadow: 0 0 5px rgba(0, 112, 243, 0.5); /* Add shadow on focus */
+}
+
+/* Style the file selector button */
+.fileInput::file-selector-button {
+  padding: 10px 15px; /* Button padding */
+  border: none; /* No border */
+  border-radius: 10px; /* Rounded corners */
+  background-color: #0070f3; /* Button background color */
+  color: white; /* Button text color */
+  font-size: 16px; /* Button font size */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+.fileInput::file-selector-button:hover {
+  background-color: #005bb5; /* Darker blue on hover */
+}
+
+
 .title {
   text-align: center;
   color: #0070f3;

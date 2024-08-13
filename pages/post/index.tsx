@@ -49,23 +49,53 @@ export default function Post() {
   }, [router]);
 
   const uploadImage = async (file: File) => {
-    const fileName = `${Date.now()}_${file.name}`;
-    //THERE IS A POST ERROR HERE
-    const { data, error: uploadError } = await supabase.storage
-      .from('images')
-      .upload(fileName, file);
-      ///////THERE IS A 403 ERROR HERE in the if statement
-    if (uploadError) {
-      console.error('Error uploading image:', uploadError);
+    //check if its a size error
+    console.log('Attempting to upload file:', file.name, 'Size:', file.size);
+
+    // Check if file is too large (adjust the size limit as needed)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      console.error('File is too large. Max size is', MAX_FILE_SIZE, 'bytes');
       return null;
     }
-    const { data: publicURL } = supabase.storage
-      .from('images')
-      .getPublicUrl(fileName);
-  
-    console.log('Uploaded image URL:', publicURL); // Debugging line
-    return publicURL;
+
+    const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, '')}`;
+    console.log('Generated file name:', fileName);
+
+
+
+    try {
+      //400 post error here
+      const { data, error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(fileName, file);
+      //403 error here
+      if (uploadError) {
+        console.error('Error uploading image:', uploadError);
+        return null;
+      }
+      console.log('Upload successful, data:', data);
+
+
+      const { data: publicURLData } = supabase.storage
+        .from('images')
+        .getPublicUrl(fileName);
+      console.log('Public URL data:', publicURLData);
+
+      if (publicURLData && publicURLData.publicUrl) {
+        console.log('Uploaded image URL:', publicURLData.publicUrl);
+        return publicURLData.publicUrl;
+      } else {
+        console.error('Failed to get public URL');
+        return null;
+      }
+    } catch (error) {
+      console.error('Unexpected error during upload:', error);
+      return null;
+    }
   };
+
+
 
   const handlePost = async (e: FormEvent) => {
     e.preventDefault();
@@ -113,12 +143,14 @@ export default function Post() {
           className={styles.textarea}
           placeholder="What did you get done today?"
         />
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-          className={styles.fileInput}
-        />
+        <div className={styles.fileInput}>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+            className={styles.fileInput}
+          />
+        </div>
         <div className={styles.buttonContainer}>
           <button type="submit" className={styles.button}>Post</button>
 

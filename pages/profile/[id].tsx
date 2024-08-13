@@ -31,9 +31,11 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isFriend, setIsFriend] = useState(false);
+  const [pendingFriend, setPendingFriend] = useState(false);
+  const [friendshipDate, setFriendshipDate] = useState<string | null>(null);
   const router = useRouter();
   const { id } = router.query;
-  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     if (router.isReady) {
@@ -71,20 +73,47 @@ export default function ProfilePage() {
 
     if (error) {
       console.error('Error fetching profile:', error);
-      if (error.code === 'PGRST116' || error.code === "404") {
-        //setShowPopup(true);
-        setError('Profile not found');
-      } else {
-        setError('Failed to load profile');
-      }
+      setError('Profile not found');
     } else if (data) {
       setProfile(data);
       setTwitterHandle(data.twitter_handle || '');
       setCurrentWork(data.current_work || '');
       await fetchUserPosts(profileId);
+      await checkFriendshipStatus(user.id, profileId);
     }
 
     setIsLoading(false);
+  }
+
+  async function checkFriendshipStatus(currentUserId: string, profileId: string) {
+    const { data, error } = await supabase
+      .from('friends')
+      .select('*')
+      .or(`(user_id.eq.${currentUserId},friend_id.eq.${profileId}), (user_id.eq.${profileId},friend_id.eq.${currentUserId})`)
+      .eq('status', 'accepted')
+      .single();
+
+    if (error) {
+      console.error('Error checking friendship status:', error);
+    } else if (data) {
+      setIsFriend(true);
+      setFriendshipDate(new Date(data.created_at).toLocaleDateString());
+    }
+  }
+
+  async function sendFriendRequest() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !profile) return;
+
+    const { error } = await supabase
+      .from('friends')
+      .insert([{ user_id: user.id, friend_id: profile.id }]);
+
+    if (error) {
+      console.error('Error sending friend request:', error);
+    } else {
+      alert('Friend request sent!');
+    }
   }
 
   async function fetchUserPosts(userId: string) {
@@ -128,17 +157,6 @@ export default function ProfilePage() {
     return <div className={styles.loading}>Loading...</div>;
   }
 
-  if (showPopup) {
-    return (
-      <div className={styles.popup}>
-        <p>Public profile functionality coming soon</p>
-        <button onClick={() => router.push('/')} className={styles.backButton}>
-          Back to Home
-        </button>
-      </div>
-    );
-  }
-
   if (error) {
     return <div className={styles.error}>{error}</div>;
   }
@@ -147,13 +165,12 @@ export default function ProfilePage() {
     return <div className={styles.error}>Profile not found</div>;
   }
 
-  //xonsole.log(profile.email)
   return (
     <div className={styles.container}>
       <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
       <h1 className={styles.title}>{profile.full_name}'s Profile</h1>
       
-        {error && <div className={styles.error}>{error}</div>}
+      {error && <div className={styles.error}>{error}</div>}
         
       <div className={styles.profileInfo}>
         {profile.avatar_url && (
@@ -197,6 +214,11 @@ export default function ProfilePage() {
             )}
             {profile.current_work && (
               <p><strong>Currently working on:</strong> {profile.current_work}</p>
+            )}
+            {isFriend ? (
+              <p><strong>Friends since {friendshipDate}</strong></p>
+            ) : (
+              <button onClick={sendFriendRequest} className={styles.button}>Add Friend</button>
             )}
           </>
         )}

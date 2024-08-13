@@ -1,0 +1,135 @@
+.popupOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.popupContent {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 800px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.container {
+  padding: 20px;
+  font-family: 'futura', sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.button {
+  background-color: #1877f2;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+  font-family: 'futura', sans-serif;
+}
+
+.button:hover {
+  background-color: #155bb5;
+}
+
+.rejectButton {
+  background-color: #dc3545;
+}
+
+.rejectButton:hover {
+  background-color: #c82333;
+}
+
+.friendCount {
+  font-size: 16px;
+  color: #666;
+}
+
+.title {
+  text-align: center;
+  color: #1877f2;
+  margin-bottom: 30px;
+  font-family: 'futura', sans-serif;
+}
+
+.noPosts {
+  text-align: center;
+  color: #666;
+  font-size: 18px;
+  margin-top: 50px;
+  font-family: 'futura', sans-serif;
+}
+
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: 'futura', sans-serif;
+  list-style-type: none;
+  padding: 0;
+}
+
+.postCard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  transition: transform 0.2s ease-in-out;
+  font-family: 'futura', sans-serif;
+}
+
+.postCard:hover {
+  transform: translateY(-5px);
+}
+
+.postContent {
+  font-size: 16px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  font-family: 'futura', sans-serif;
+}
+
+.postMeta {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  font-size: 14px;
+  color: #666;
+  font-family: 'futura', sans-serif;
+}
+
+.friendList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+.friendCard {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  background-color: #f9f9f9;
+  font-weight: bold;
+}
+
+.friendCard:hover {
+  background-color: #e0e0e0;
+}
